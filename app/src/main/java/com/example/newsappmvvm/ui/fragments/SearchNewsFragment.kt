@@ -100,10 +100,14 @@ class SearchNewsFragment: BaseFragment<NewsViewModel, FragmentSearchNewsBinding>
         val bundle = Bundle().apply {
             putSerializable("article",article)
         }
-        findNavController().navigate(
-            R.id.action_searchNewsFragment_to_articleFragment,
-            bundle
-        )
+        try {
+            val action = SearchNewsFragmentDirections.actionSearchNewsFragmentToArticleFragmentSearch(article)
+            findNavController().navigate(
+                action
+            )
+        } catch (e: Exception) {
+            Log.d("SaveNewsFragment", "listItemClicked: ${e.message}")
+        }
     }
 
     private val scrollListener = object : RecyclerView.OnScrollListener(){

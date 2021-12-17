@@ -1,5 +1,6 @@
 package com.example.newsappmvvm.ui
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,12 +8,19 @@ import com.example.newsappmvvm.models.Article
 import com.example.newsappmvvm.models.NewsResponse
 import com.example.newsappmvvm.repository.NewsRepository
 import com.example.newsappmvvm.util.Resource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class NewsViewModel(
     private val newsRepository: NewsRepository
 ) : ViewModel(){
+
+    private val _breakingNewsFlowData = MutableStateFlow<Resource<NewsResponse>>(Resource.Loading())
+    val breakingNewsFlowData get() = _breakingNewsFlowData
 
     val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     var breakingNewsPage = 1
@@ -22,13 +30,26 @@ class NewsViewModel(
     var searchNewsPage = 1
     var searchNewsResponse: NewsResponse? = null
 
+
+
     init {
+
         getBreakingNews("us")
+       /* viewModelScope.launch {
+            getBreakingNews("us")
+        }*/
+        /*if (breakingNewsFlowData.value.data!!.articles.isNullOrEmpty()){
+            getBreakingNews("us")
+        }*/
+
     }
 
     fun getBreakingNews(countryCode: String) = viewModelScope.launch {
         breakingNews.postValue(Resource.Loading())
+        _breakingNewsFlowData.emit(Resource.Loading())
+
         val response = newsRepository.getBreakingNews(countryCode,breakingNewsPage)
+        _breakingNewsFlowData.emit(handleBreakingNewsResponse(response))
         breakingNews.postValue(handleBreakingNewsResponse(response))
     }
 
@@ -80,5 +101,10 @@ class NewsViewModel(
 
     fun deleteArticle(article: Article) = viewModelScope.launch {
         newsRepository.deleteArticle(article)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("Viewmodel", "onCleared: viewmodel cleared")
     }
 }

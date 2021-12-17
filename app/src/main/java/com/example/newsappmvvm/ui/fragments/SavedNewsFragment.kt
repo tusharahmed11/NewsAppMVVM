@@ -1,6 +1,7 @@
 package com.example.newsappmvvm.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -78,10 +79,14 @@ class SavedNewsFragment: BaseFragment<NewsViewModel, FragmentSavedNewsBinding>()
         val bundle = Bundle().apply {
             putSerializable("article",article)
         }
-        findNavController().navigate(
-            R.id.action_savedNewsFragment_to_articleFragment,
-            bundle
-        )
+        try {
+            val action = SavedNewsFragmentDirections.actionSavedNewsFragmentToArticleFragmentFavorite(article)
+            findNavController().navigate(
+                action
+            )
+        } catch (e: Exception) {
+            Log.d("SaveNewsFragment", "listItemClicked: ${e.message}")
+        }
     }
 
     override fun getContentView(): Int {

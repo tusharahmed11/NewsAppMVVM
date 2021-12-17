@@ -35,11 +35,13 @@ abstract class BaseFragment<V : ViewModel, T : ViewDataBinding>: Fragment() {
         val viewModelProviderFactory = newsRepository?.let { NewsViewModelProviderFactory(it) }
         viewModel = viewModelProviderFactory?.let { ViewModelProvider(this, it) }!![getViewModelClass()]
 
-        setupUI()
-
-
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupUI()
     }
 
     fun hideView(view: View){

@@ -10,10 +10,9 @@ import com.google.android.material.snackbar.Snackbar
 
 class ArticleFragment: BaseFragment<NewsViewModel, FragmentArticleBinding>() {
 
-    val args: ArticleFragmentArgs by navArgs()
+    private val args by navArgs<ArticleFragmentArgs>()
 
     override fun setupUI() {
-
         val article = args.article
 
         binding.webView.apply {
